@@ -1,0 +1,10 @@
+[project]
+name = "algorithm-time-script"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "distanceclosure>=0.5",
+    "psutil>=7.2.2",
+]
