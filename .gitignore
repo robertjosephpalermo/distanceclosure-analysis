@@ -8,3 +8,12 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Folders
+archive
+
+# Environment Variables
+.env
+
+# Data
+mix_dt.csv

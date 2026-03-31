@@ -23,9 +23,9 @@ class FunctionTimer:
         func = getattr(self._module, name)
 
         def wrapped(*args, **kwargs):
-            t_0 = time.perf_counter()
+            t_0 = time.perf_counter_ns()
             out = func(*args, **kwargs)
-            dt = time.perf_counter() - t_0
+            dt_ns = time.perf_counter_ns() - t_0
             
             self.json_log.append({
                     "run_log": { 
@@ -33,8 +33,9 @@ class FunctionTimer:
                         "function": f"{str(self._module.__name__)}.{name}",
                         "args": {self._jsv(i): self._jsv(v) for i, v in enumerate(args)},
                         "kwargs": {self._jsv(k): self._jsv(v) for k, v in kwargs.items()},
-                        "runtime_in_seconds": dt,
-                        "runtime_in_minutes": dt / 60
+                        "runtime_in_nanoseconds": dt_ns,
+                        "runtime_in_seconds": dt_ns / 1e9,
+                        "runtime_in_minutes": dt_ns / 6e10
                     },
                     "system_log": {
                         "python_version": sys.version,
