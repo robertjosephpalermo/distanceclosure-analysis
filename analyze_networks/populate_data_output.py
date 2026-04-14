@@ -1,4 +1,4 @@
-from time_script.FunctionTimer import FunctionTimer
+from function_timer.FunctionTimer import FunctionTimer
 from pathlib import Path
 import networkx as nx
 import pandas as pd
@@ -70,7 +70,7 @@ def log_results(graph: pd.DataFrame | nx.Graph, domain_name: str, network_name: 
     print(f"{network_name} finished.")
 
 
-def cohort_a():
+def cohort_undirected():
     root = Path(os.environ["NETWORK_DIR"]) / "network_samples" / "Undirected_Network_Studied"
 
     for domain in root.iterdir():
@@ -82,7 +82,7 @@ def cohort_a():
                 log_results(network_df, domain.name, network_dir.name)
 
 
-def cohort_b():
+def cohort_directed():
     root = Path(os.environ["NETWORK_DIR"]) / "network_samples" / "Directed_Network_Studied"
 
     for network_dir in root.iterdir():
@@ -93,7 +93,7 @@ def cohort_b():
             log_results(network_df, root.name, network_dir.name)
 
 
-def cohort_c():
+def cohort_neurodata():
     root = Path(os.environ["NETWORK_DIR"]) / "network_samples" / "NeuroData"
 
     for network_dir in root.iterdir():
@@ -107,6 +107,6 @@ def cohort_c():
                 log_results(G, root.name, network_dir.stem)
 
 
-# cohort_a()
-# cohort_b()
-# cohort_c()
+# cohort_undirected()
+# cohort_directed()
+# cohort_neurodata()
