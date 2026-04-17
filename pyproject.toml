@@ -16,4 +16,4 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-distanceclosure = { git = "https://github.com/robertjosephpalermo/distanceclosure", branch = "heuristic_backbone" }
+distanceclosure = { git = "https://github.com/CASCI-lab/distanceclosure", branch = "heuristic_backbone" }

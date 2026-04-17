@@ -53,7 +53,7 @@ def define_row(g: pd.DataFrame | nx.Graph, domain: str, network_name: str) -> pd
 
 
 def append_file(new_row: pd.DataFrame) -> None:
-    file_path = "distanceclosure_analysis/organize_networks/data_output/mix_dt.csv"
+    file_path = "distanceclosure_analysis/organize_networks/data_output/dt_output.csv"
 
     new_row.to_csv(
         file_path, 
