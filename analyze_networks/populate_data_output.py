@@ -13,24 +13,26 @@ def define_row(g: pd.DataFrame | nx.Graph, domain: str, network_name: str) -> pd
         g = nx.from_pandas_edgelist(g, source="source", target="target", edge_attr="distance")
     
     timer = FunctionTimer(module=dc)
-    
+    runtime_type = "runtime_in_seconds"
+    log_type = "run_log"
+
     # Metric Backbone
     iter_metric_backbone = timer.iterative_backbone(g, weight="distance", kind="metric")
-    iter_metric_dt = timer.json_log[0]["run_log"]["runtime_in_seconds"]
-    print("Iterative Metric Done")
+    iter_metric_dt = timer.json_log[0][log_type][runtime_type]
+    print(f"Iterative Metric Complete: {network_name}")
 
     flag_metric_backbone = timer.flagged_backbone(g, weight="distance", kind="metric")
-    flag_metric_dt = timer.json_log[1]["run_log"]["runtime_in_seconds"]
-    print("Flagged Metric Done")
+    flag_metric_dt = timer.json_log[1][log_type][runtime_type]
+    print(f"Flagged Metric Complete: {network_name}")
 
     # Ultrametric Backbone
     iter_ultrametric_backbone = timer.iterative_backbone(g, weight="distance", kind="ultrametric")
-    iter_ultrametric_dt = timer.json_log[2]["run_log"]["runtime_in_seconds"]
-    print("Iterative Ultrametric Done")
+    iter_ultrametric_dt = timer.json_log[2][log_type][runtime_type]
+    print(f"Iterative Ultrametric Complete: {network_name}")
 
     flag_ultrametric_backbone = timer.flagged_backbone(g, weight="distance", kind="ultrametric")
-    flag_ultrametric_dt = timer.json_log[3]["run_log"]["runtime_in_seconds"]
-    print("Flagged Ultrametric Done")
+    flag_ultrametric_dt = timer.json_log[3][log_type][runtime_type]
+    print(f"Flagged Ultrametric Complete: {network_name}")
 
     row = [{
         "type": "Directed" if g.is_directed() == True else "Undirected",
@@ -63,14 +65,14 @@ def append_file(new_row: pd.DataFrame) -> None:
     )
 
 
-def log_results(graph: pd.DataFrame | nx.Graph, domain_name: str, network_name: str):    
+def log_results(graph: pd.DataFrame | nx.Graph, domain_name: str, network_name: str) -> None:    
     row = define_row(graph, domain_name, network_name)
     append_file(row)
 
     print(f"{network_name} finished.")
 
 
-def cohort_undirected():
+def cohort_undirected() -> None:
     root = Path(os.environ["NETWORK_DIR"]) / "network_samples" / "Undirected_Network_Studied"
 
     for domain in root.iterdir():
@@ -82,7 +84,7 @@ def cohort_undirected():
                 log_results(network_df, domain.name, network_dir.name)
 
 
-def cohort_directed():
+def cohort_directed() -> None:
     root = Path(os.environ["NETWORK_DIR"]) / "network_samples" / "Directed_Network_Studied"
 
     for network_dir in root.iterdir():
@@ -93,7 +95,7 @@ def cohort_directed():
             log_results(network_df, root.name, network_dir.name)
 
 
-def cohort_neurodata():
+def cohort_neurodata() -> None:
     root = Path(os.environ["NETWORK_DIR"]) / "network_samples" / "NeuroData"
 
     for network_dir in root.iterdir():
