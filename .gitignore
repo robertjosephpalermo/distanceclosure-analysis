@@ -13,9 +13,7 @@ uv.lock
 
 # Folders
 archive
+data_output
 
 # Environment Variables
 .env
-
-# Data
-mix_dt.csv
