@@ -20,4 +20,4 @@ archive
 # Data
 dt_output_test.csv
 mix_dt.csv
-output.csv
+single_use_output.csv

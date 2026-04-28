@@ -20,7 +20,7 @@ def undirected_graph_cohort() -> None:
                     graph=network_df, 
                     domain_name=domain.name, 
                     network_name=network_dir.name,
-                    output_file_name="dt_output_test.csv",
+                    output_file_path="analyze_networks/data_output/dt_output_test.csv",
                 )
 
 
@@ -37,7 +37,7 @@ def directed_graph_cohort() -> None:
                 graph=network_df,
                 domain_name=root.name,
                 network_name=network_dir.name, 
-                output_file_name="dt_output_test.csv",
+                output_file_path="analyze_networks/data_output/dt_output_test.csv",
             )
 
 
@@ -56,7 +56,7 @@ def neurodata_graph_cohort() -> None:
                     graph=G, 
                     domain_name=root.name, 
                     network_name=network_dir.stem, 
-                    output_file_name="dt_output_test.csv",
+                    output_file_path="analyze_networks/data_output/dt_output_test.csv",
                 )
 
 # undirected_graph_cohort()

@@ -1,4 +1,5 @@
 import networkx as nx
+import numpy as np
 
 def get_edge_attribute_names(graph: nx.Graph) -> set:
     keys = set()
@@ -20,3 +21,8 @@ def all_edges_have_attribute(G, attribute: str) -> bool:
 
 def has_edge_attribute(graph: nx.Graph, attribute: str) -> bool:
     return any(attribute in d for _, _, d in graph.edges(data=True))
+
+
+def compute_distance_cv(graph: nx.Graph) -> float:
+    weights = [float(data["distance"]) for _, _, data in graph.edges(data=True)]
+    return np.std(weights) / np.mean(weights)
