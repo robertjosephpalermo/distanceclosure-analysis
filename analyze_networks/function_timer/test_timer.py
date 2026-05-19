@@ -19,8 +19,9 @@ edgelist = {
 G = nx.from_edgelist(edgelist)
 nx.set_edge_attributes(G, name='distance', values=edgelist)
 
-timer = FunctionTimer(module=dc)
-umb = timer.ultrametric_backbone(G, weight='distance', verbose=True)
+timer = FunctionTimer()
+
+umb = timer(dc.ultrametric_backbone)(G, weight='distance', verbose=True)
 timer.json_dump()
 
 

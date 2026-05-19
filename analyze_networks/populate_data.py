@@ -1,13 +1,13 @@
 from function_timer.FunctionTimer import FunctionTimer
 from graphml_utilities import has_edge_attribute, all_edges_have_attribute, rename_edge_attributes, get_edge_attribute_names, compute_distance_cv
-from pathlib import Path
 import networkx as nx
 import pandas as pd
 import distanceclosure.backbone as dc 
 import os
 
-
 def define_row(graph: pd.DataFrame | nx.Graph, domain_name: str, network_name: str) -> pd.DataFrame:
+    timer = FunctionTimer()
+    
     if isinstance(graph, pd.DataFrame):
         graph = nx.from_pandas_edgelist(
             graph, 
@@ -15,90 +15,45 @@ def define_row(graph: pd.DataFrame | nx.Graph, domain_name: str, network_name: s
             target="target", 
             edge_attr="distance"
         )
-    
-    timer = FunctionTimer(module=dc)
-    runtime_type = "runtime_in_seconds"
-    log_type = "run_log"
 
-    # Metric Backbone
-    iter_metric_backbone = timer.iterative_backbone(
-        graph, 
-        weight="distance", 
-        kind="metric", 
-        verbose=True
-    )
-    iter_metric_dt = timer.json_log[0][log_type][runtime_type]
-    print(f"Iterative Metric Complete: {network_name}")
-
-    flag_metric_backbone = timer.flagged_backbone(
-        graph, 
-        weight="distance", 
-        kind="metric", 
-        verbose=True
-    )
-    flag_metric_dt = timer.json_log[1][log_type][runtime_type]
-    print(f"Flagged Metric Complete: {network_name}")
-
-    clos_metric_backbone = timer.backbone_from_closure(
-        graph, 
-        weight="distance", 
-        kind="metric", 
-        verbose=True
-    )
-    clos_metric_dt = timer.json_log[2][log_type][runtime_type]
-    print(f"Closure Metric Complete: {network_name}")
-
-    # Ultrametric Backbone
-    iter_ultrametric_backbone = timer.iterative_backbone(
-        graph, 
-        weight="distance", 
-        kind="ultrametric", 
-        verbose=True
-    )
-    iter_ultrametric_dt = timer.json_log[3][log_type][runtime_type]
-    print(f"Iterative Ultrametric Complete: {network_name}")
-
-    flag_ultrametric_backbone = timer.flagged_backbone(
-        graph, 
-        weight="distance", 
-        kind="ultrametric", 
-        verbose=True
-    )
-    flag_ultrametric_dt = timer.json_log[4][log_type][runtime_type]
-    print(f"Flagged Ultrametric Complete: {network_name}")
-
-    clos_ultrametric_backbone = timer.backbone_from_closure(
-        graph, 
-        weight="distance", 
-        kind="ultrametric", 
-        verbose=True
-    )
-    clos_ultrametric_dt = timer.json_log[5][log_type][runtime_type]
-    print(f"Closure Ultrametric Complete: {network_name}")
-
-    row = [{
+    row = {
         "type": "Directed" if graph.is_directed() == True else "Undirected",
         "domain": domain_name,
         "name": network_name,
         "nodes": graph.number_of_nodes(),
         "edges": graph.number_of_edges(),
         "density": round(nx.density(graph), 3),
-        "cv": round(compute_distance_cv(graph), 3),
-        "iter_metric_edges": iter_metric_backbone.number_of_edges(),
-        "flag_metric_edges": flag_metric_backbone.number_of_edges(),
-        "clos_metric_edges": clos_metric_backbone.number_of_edges(),
-        "iter_ultrametric_edges": iter_ultrametric_backbone.number_of_edges(),
-        "flag_ultrametric_edges": flag_ultrametric_backbone.number_of_edges(),
-        "clos_ultrametric_edges": clos_ultrametric_backbone.number_of_edges(),
-        "iter_metric_dt": round(iter_metric_dt, 3),
-        "flag_metric_dt": round(flag_metric_dt ,3),
-        "clos_metric_dt": round(clos_metric_dt ,3),
-        "iter_ultrametric_dt": round(iter_ultrametric_dt, 3),
-        "flag_ultrametric_dt": round(flag_ultrametric_dt ,3),
-        "clos_ultrametric_dt": round(clos_ultrametric_dt ,3)
-    }]
+        "cv": round(compute_distance_cv(graph), 3)
+    }
+   
+    functions = { 
+        "iterative": dc.iterative_backbone,
+        "flagged": dc.flagged_backbone,
+        "closure": dc.backbone_from_closure
+    }
 
-    return pd.DataFrame(row)
+    kinds = [
+        "metric",
+        "ultrametric"
+    ]
+    
+    i = 0 
+    for kind in kinds:
+        for name, function in functions.items():
+            new_backbone = timer(function)(
+                graph, 
+                weight="distance",
+                kind=kind,
+                verbose=True
+            )
+            new_backbone_dt = timer.json_log[i]["run_log"]["runtime_in_seconds"]
+            print(f"{name} {kind} backbone complete.")
+            
+            row[f"{name}_{kind}_edges"] = new_backbone.number_of_edges()
+            row[f"{name}_{kind}_dt"] = round(new_backbone_dt, 3)
+            i += 1
+    
+    return pd.DataFrame([row])
 
 
 def append_file(new_row: pd.DataFrame, output_file_path: str) -> None:
