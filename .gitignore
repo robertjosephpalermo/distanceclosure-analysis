@@ -17,6 +17,9 @@ archive
 # Environment Variables
 .env
 
+# Files
+network_samples_output.py
+
 # Data
 dt_output_test.csv
 mix_dt.csv

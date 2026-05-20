@@ -20,13 +20,11 @@ class FunctionTimer:
         return repr(value)
 
     def __call__(self, func):
-
+        
         @wraps(func)
         def wrapped(*args, **kwargs):
             t_0 = time.perf_counter_ns()
-
             out = func(*args, **kwargs)
-
             dt_ns = time.perf_counter_ns() - t_0
 
             self.json_log.append({
@@ -58,7 +56,6 @@ class FunctionTimer:
                     "ram_gb": round(psutil.virtual_memory().total / 1e9, 2),
                 }
             })
-
             return out
-
+        
         return wrapped
