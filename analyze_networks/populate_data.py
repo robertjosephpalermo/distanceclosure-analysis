@@ -25,7 +25,7 @@ def define_row(graph: pd.DataFrame | nx.Graph, domain_name: str, network_name: s
         graph, 
         weight="distance", 
         kind="metric", 
-        verbose=True
+        verbose=False
     )
     iter_metric_dt = timer.json_log[0][log_type][runtime_type]
     print(f"Iterative Metric Complete: {network_name}")
@@ -34,7 +34,7 @@ def define_row(graph: pd.DataFrame | nx.Graph, domain_name: str, network_name: s
         graph, 
         weight="distance", 
         kind="metric", 
-        verbose=True
+        verbose=False
     )
     flag_metric_dt = timer.json_log[1][log_type][runtime_type]
     print(f"Flagged Metric Complete: {network_name}")
@@ -43,7 +43,7 @@ def define_row(graph: pd.DataFrame | nx.Graph, domain_name: str, network_name: s
         graph, 
         weight="distance", 
         kind="metric", 
-        verbose=True
+        verbose=False
     )
     clos_metric_dt = timer.json_log[2][log_type][runtime_type]
     print(f"Closure Metric Complete: {network_name}")
@@ -53,7 +53,7 @@ def define_row(graph: pd.DataFrame | nx.Graph, domain_name: str, network_name: s
         graph, 
         weight="distance", 
         kind="ultrametric", 
-        verbose=True
+        verbose=False
     )
     iter_ultrametric_dt = timer.json_log[3][log_type][runtime_type]
     print(f"Iterative Ultrametric Complete: {network_name}")
@@ -62,7 +62,7 @@ def define_row(graph: pd.DataFrame | nx.Graph, domain_name: str, network_name: s
         graph, 
         weight="distance", 
         kind="ultrametric", 
-        verbose=True
+        verbose=False
     )
     flag_ultrametric_dt = timer.json_log[4][log_type][runtime_type]
     print(f"Flagged Ultrametric Complete: {network_name}")
@@ -71,7 +71,7 @@ def define_row(graph: pd.DataFrame | nx.Graph, domain_name: str, network_name: s
         graph, 
         weight="distance", 
         kind="ultrametric", 
-        verbose=True
+        verbose=False
     )
     clos_ultrametric_dt = timer.json_log[5][log_type][runtime_type]
     print(f"Closure Ultrametric Complete: {network_name}")
@@ -118,7 +118,7 @@ def log_backbone_output(graph: pd.DataFrame | nx.Graph, domain_name: str, networ
     print()
 
 
-def single_use_backbone_output(graph: nx.Graph, edge_attribute: str, output_file_path: str) -> None:
+def single_use_backbone_output(graph: nx.Graph, gname: str, edge_attribute: str, output_file_path: str) -> None:
     """
     graph: Must be a directed or undirected graphml file only.\n
     edge_attribute: This is the 'edge_attribute' of the graph you want the backbone algorithm to interpret as 'distance'.\n
@@ -150,7 +150,7 @@ def single_use_backbone_output(graph: nx.Graph, edge_attribute: str, output_file
     log_backbone_output(
         graph=graph,
         domain_name="N/A",
-        network_name="N/A",
+        network_name=gname,
         output_file_path=output_file_path
     )
 
