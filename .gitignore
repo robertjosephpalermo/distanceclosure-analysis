@@ -13,6 +13,7 @@ uv.lock
 
 # Folders
 archive
+plots
 
 # Environment Variables
 .env
@@ -25,4 +26,6 @@ dt_output_test.csv
 mix_dt.csv
 single_use_output.csv
 test_output.csv
+test.csv
+results.json
 

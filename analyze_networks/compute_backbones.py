@@ -60,7 +60,9 @@ def define_row(graph: pd.DataFrame | nx.Graph) -> pd.DataFrame:
     functions = { 
         "iterative": dc.iterative_backbone,
         "flagged": dc.flagged_backbone,
-        "closure": dc.backbone_from_closure
+        "closure": dc.backbone_from_closure,
+        "heuristic": dc.heuristic_backbone,
+        "heuristic_approximation": dc.heuristic_backbone
     }
 
     kinds = [
@@ -71,11 +73,22 @@ def define_row(graph: pd.DataFrame | nx.Graph) -> pd.DataFrame:
     i = 0 
     for kind in kinds:
         for name, function in functions.items():
-            new_backbone = timer(function)(
-                graph, 
-                weight="distance",
-                kind=kind,
-            )
+
+            if name == "heuristic_approximation":
+                new_backbone = timer(function)(
+                    graph, 
+                    weight="distance",
+                    kind=kind,
+                    approx=True
+                )
+            else:
+                new_backbone = timer(function)(
+                    graph, 
+                    weight="distance",
+                    kind=kind,
+                )
+
+
             new_backbone_dt = timer.json_log[i]["run_log"]["runtime_in_seconds"]
             print(f"{name} {kind} backbone complete.")
             
