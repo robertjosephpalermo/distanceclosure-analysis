@@ -1,5 +1,6 @@
 #Local Files
 LOCAL/*
+network_samples_output.py
 
 # Python-generated files
 __pycache__/
@@ -16,6 +17,7 @@ uv.lock
 
 # Folders
 archive
+plots
 
 # Environment Variables
 .env
@@ -24,3 +26,5 @@ archive
 dt_output_test.csv
 mix_dt.csv
 single_use_output.csv
+results.json
+test.csv
