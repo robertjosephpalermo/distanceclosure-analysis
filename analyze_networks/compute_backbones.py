@@ -73,7 +73,6 @@ def define_row(graph: pd.DataFrame | nx.Graph) -> pd.DataFrame:
     i = 0 
     for kind in kinds:
         for name, function in functions.items():
-
             if name == "heuristic_approximation":
                 new_backbone = timer(function)(
                     graph, 
