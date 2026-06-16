@@ -22,9 +22,14 @@ plots
 # Environment Variables
 .env
 
+# Files
+network_samples_output.py
+
 # Data
 dt_output_test.csv
 mix_dt.csv
 single_use_output.csv
-results.json
+test_output.csv
 test.csv
+results.json
+
