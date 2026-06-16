@@ -24,6 +24,7 @@ plots
 
 # Files
 network_samples_output.py
+test_timer.py
 
 # Data
 dt_output_test.csv

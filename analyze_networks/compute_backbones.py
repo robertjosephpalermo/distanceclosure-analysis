@@ -7,7 +7,43 @@ import pandas as pd
 import os
 
 
-def handle_path(path_to_graph: str) -> nx.Graph | nx.DiGraph:
+def load_graph(path_to_graph: str) -> nx.Graph | nx.DiGraph:
+    """
+    Handles errors and standardizes graph data.
+
+    Parameters
+    ----------
+    ``path_to_graph`` : str
+        Complete path to the graph being loaded.
+    
+    Returns
+    -------
+    nx.Graph or nx.DiGraph
+        A graph representation of the file input.
+
+    Raises
+    ------
+    FileNotFoundError
+        If ``path_to_graph`` does not exist.
+
+    ValueError
+        If ``path_to_graph`` is not a file.
+
+    ValueError
+        If the file extension is not supported. Supported file types
+        are ``.csv`` and ``.graphml``.
+
+    TypeError
+        If the loaded object is not a nx.Graph or nx.DiGraph.
+
+    ValueError
+        If the loaded graph is a nx.MultiGraph or MultiDiGraph.
+
+    ValueError
+        If one or more edges do not contain the ``distance`` attribute.
+
+    """
+
     path = Path(path_to_graph)
 
     if not path.exists():
@@ -45,7 +81,34 @@ def handle_path(path_to_graph: str) -> nx.Graph | nx.DiGraph:
     return graph
 
 
-def define_row(graph: pd.DataFrame | nx.Graph) -> pd.DataFrame:
+def define_row(graph: pd.DataFrame | nx.Graph | nx.DiGraph) -> pd.DataFrame:
+    """
+    Computes the metric and ultrametric backbone of a directed or undirected graph using 5 algorithms.
+
+    Parameters
+    ----------
+    ``graph`` : pd.DataFrame | nx.Graph | nx.DiGraph
+        Graph whos backbone will be computed.
+    
+    Returns
+    -------
+    pd.DataFrame
+        A single-row DataFrame with columns:
+        - type
+        - relative_path
+        - nodes
+        - edges
+        - density
+        - cv
+        - {algorithm}_{kind}_edges
+        - {algorithm}_{kind}_dt
+
+        where algorithm is one of {iterative, flagged, closure,
+        heuristic, heuristic_approximation} and kind is one of
+        {metric, ultrametric}.
+    """
+
+
     timer = FunctionTimer() 
 
     row = {
@@ -99,6 +162,24 @@ def define_row(graph: pd.DataFrame | nx.Graph) -> pd.DataFrame:
 
 
 def append_output_file(new_row: pd.DataFrame, path_to_output: str) -> None:
+    """
+    Appends a row of backbone statistics to an output CSV file.
+
+    Parameters
+    ----------
+    ``new_row`` : pd.DataFrame
+        Single-row DataFrame containing graph metadata.
+
+    ``path_to_output`` : str
+        Path to the output CSV file. If the file does not exist,
+        it is created and column headers are written.
+
+    Returns
+    -------
+    None
+        Writes ``new_row`` to ``path_to_output`` and does not
+        return a value.
+    """
     file_exists = os.path.isfile(path_to_output)
 
     new_row.to_csv(
@@ -108,8 +189,45 @@ def append_output_file(new_row: pd.DataFrame, path_to_output: str) -> None:
         index=False
     )
 
-def compute_backbones(path_to_graph: str, path_to_output: str) -> None:    
-    graph = handle_path(path_to_graph)
+def compute_backbones(path_to_graph: str, path_to_output: str) -> None:
+    """
+    Computes backbone statistics for a graph and appends the results
+    to an output CSV file.
+
+    Parameters
+    ----------
+    path_to_graph : str
+        Path to the input graph file. Supported file types are
+        ``.csv`` and ``.graphml``.
+
+    path_to_output : str
+        Path to the CSV file where backbone statistics will be
+        appended.
+
+    Returns
+    -------
+    None
+        Computes backbone statistics for the input graph and writes
+        the resulting row to ``path_to_output``.
+
+    Raises
+    ------
+    FileNotFoundError
+        If ``path_to_graph`` does not exist.
+
+    ValueError
+        If ``path_to_graph`` is not a file, has an unsupported file
+        extension, represents a multigraph, or contains edges
+        without the ``distance`` attribute.
+
+    TypeError
+        If the loaded object is not a NetworkX ``Graph`` or
+        ``DiGraph``.
+
+    OSError
+        If the output file cannot be written.
+    """    
+    graph = load_graph(path_to_graph)
     row = define_row(graph)
 
     append_output_file(row, path_to_output)
