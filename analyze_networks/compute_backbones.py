@@ -1,4 +1,5 @@
 from graphml_utilities import all_edges_have_attribute, compute_distance_cv
+from definitions import DataColumn, Algorithm, Metric
 from function_timer.FunctionTimer import FunctionTimer
 from pathlib import Path
 import distanceclosure.backbone as dc 
@@ -108,54 +109,52 @@ def define_row(graph: pd.DataFrame | nx.Graph | nx.DiGraph) -> pd.DataFrame:
         {metric, ultrametric}.
     """
 
-
     timer = FunctionTimer() 
 
     row = {
-        "type": "Directed" if graph.is_directed() == True else "Undirected",
-        "relative_path": graph.graph["path"],
-        "nodes": graph.number_of_nodes(),
-        "edges": graph.number_of_edges(),
-        "density": round(nx.density(graph), 3),
-        "cv": round(compute_distance_cv(graph), 3)
+        DataColumn.TYPE: "Directed" if graph.is_directed() == True else "Undirected",
+        DataColumn.RELATIVE_PATH: graph.graph["path"],
+        DataColumn.NODES: graph.number_of_nodes(),
+        DataColumn.EDGES: graph.number_of_edges(),
+        DataColumn.DENSITY: round(nx.density(graph), 3),
+        DataColumn.CV: round(compute_distance_cv(graph), 3)
     }
    
     functions = { 
-        "iterative": dc.iterative_backbone,
-        "flagged": dc.flagged_backbone,
-        "closure": dc.backbone_from_closure,
-        "heuristic": dc.heuristic_backbone,
-        "heuristic_approximation": dc.heuristic_backbone
+        Algorithm.ITERATIVE: dc.iterative_backbone,
+        Algorithm.FLAGGED: dc.flagged_backbone,
+        Algorithm.CLOSURE: dc.backbone_from_closure,
+        Algorithm.HEURISTIC: dc.heuristic_backbone,
+        Algorithm.HEURISTIC_APPROX: dc.heuristic_backbone
     }
-
-    kinds = [
-        "metric",
-        "ultrametric"
-    ]
     
     i = 0 
-    for kind in kinds:
+    for metric in Metric:
         for name, function in functions.items():
-            if name == "heuristic_approximation":
+            if name == Algorithm.HEURISTIC_APPROX:
                 new_backbone = timer(function)(
                     graph, 
                     weight="distance",
-                    kind=kind,
+                    kind=metric,
                     approx=True
                 )
             else:
                 new_backbone = timer(function)(
                     graph, 
                     weight="distance",
-                    kind=kind,
+                    kind=metric,
                 )
 
+            runtime_metadata = timer.json_log[i]["run_log"]
 
-            new_backbone_dt = timer.json_log[i]["run_log"]["runtime_in_seconds"]
-            print(f"{name} {kind} backbone complete.")
+            new_backbone_dt = runtime_metadata["runtime_in_seconds"]
+            print(f"{name} {metric} backbone complete.")
             
-            row[f"{name}_{kind}_edges"] = new_backbone.number_of_edges()
-            row[f"{name}_{kind}_dt"] = round(new_backbone_dt, 3)
+            new_edges_column = name + "_" + metric + "_edges"
+            new_runtime_column = name + "_" + metric + "_dt"
+
+            row[new_edges_column] = new_backbone.number_of_edges()
+            row[new_runtime_column] = round(new_backbone_dt, 3)
             i += 1
     print()
     return pd.DataFrame([row])
@@ -188,6 +187,7 @@ def append_output_file(new_row: pd.DataFrame, path_to_output: str) -> None:
         header=not file_exists, 
         index=False
     )
+
 
 def compute_backbones(path_to_graph: str, path_to_output: str) -> None:
     """
@@ -231,6 +231,4 @@ def compute_backbones(path_to_graph: str, path_to_output: str) -> None:
     row = define_row(graph)
 
     append_output_file(row, path_to_output)
-
-
 

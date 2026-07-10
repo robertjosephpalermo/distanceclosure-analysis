@@ -17,20 +17,21 @@ uv.lock
 
 # Folders
 archive
-plots
+plot_development
 
 # Environment Variables
 .env
 
 # Files
-network_samples_output.py
 test_timer.py
+brain_benchmark.py
+mixed_benchmark.py
+load_data.py
+
 
 # Data
-dt_output_test.csv
-mix_dt.csv
-single_use_output.csv
-test_output.csv
-test.csv
-results.json
+brain_benchmark.csv
+undirected_benchmark.csv
+directed_benchmark.csv
+
 
